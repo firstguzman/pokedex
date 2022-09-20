@@ -6,16 +6,25 @@ import {
   Button,
   Keyboard
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
+import { user, userDetails } from '../../utils/userDB'
+
 export default function LoginForm() {
+  const [error, setError] = useState('')
   const formik = useFormik({
     initialValues: initialValues(),
     validationSchema: Yup.object(validationSchema()),
     onSubmit: (formValue) => {
-      console.log('Form sent')
+      const { username, password } = formValue
+
+      if (username !== user.username || password !== user.password) {
+        setError('Invalid credentials')
+      } else {
+        console.log('Login successfully')
+      }
     }
   })
   return (
@@ -39,6 +48,7 @@ export default function LoginForm() {
       <Button title='Log in' onPress={formik.handleSubmit} />
       <Text style={styles.error}>{formik.errors.username}</Text>
       <Text style={styles.error}>{formik.errors.password}</Text>
+      <Text style={styles.error}>{error}</Text>
     </View>
   )
 }
