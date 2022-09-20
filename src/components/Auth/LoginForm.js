@@ -11,9 +11,12 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
 import { user, userDetails } from '../../utils/userDB'
+import useAuth from '../../hooks/useAuth'
 
 export default function LoginForm() {
   const [error, setError] = useState('')
+  const { login } = useAuth()
+
   const formik = useFormik({
     initialValues: initialValues(),
     validationSchema: Yup.object(validationSchema()),
@@ -23,10 +26,11 @@ export default function LoginForm() {
       if (username !== user.username || password !== user.password) {
         setError('Invalid credentials')
       } else {
-        console.log('Login successfully')
+        login(userDetails)
       }
     }
   })
+
   return (
     <View>
       <Text style={styles.title}>Log In</Text>
