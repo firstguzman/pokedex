@@ -1,20 +1,30 @@
 import { Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { getPokemonsFavoriteApi } from '../api/favorite'
+import useAuth from '../hooks/useAuth'
+import { getPokemonDetail } from '../utils/getPokemonDetail'
+import PokemonList from '../components/PokemonList'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function Favorite() {
-  const [favorites, setFavorites] = useState(null)
+  const [pokemons, setPokemons] = useState([])
+  const { auth } = useAuth()
 
-  useEffect(() => {
-    ;(async () => {
-      const response = await getPokemonsFavoriteApi()
-    })()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      if (auth) {
+        ;(async () => {
+          const response = await getPokemonsFavoriteApi()
+          const pokemonDetails = await getPokemonDetail(response)
+          setPokemons(pokemonDetails)
+        })()
+      }
+    }, [auth])
+  )
 
-  return (
-    <SafeAreaView>
-      <Text>Favorite</Text>
-    </SafeAreaView>
+  return !auth ? (
+    <Text>User not logged</Text>
+  ) : (
+    <PokemonList pokemons={pokemons} />
   )
 }
