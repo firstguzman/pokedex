@@ -4,6 +4,7 @@ import { addPokemonFavoriteApi, isPokemonFavoriteApi } from '../../api/favorite'
 
 export default function FavoriteButton({ id }) {
   const [isFavorite, setIsFavorite] = useState(undefined)
+  const [reloadCheck, setReloadCheck] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -14,10 +15,19 @@ export default function FavoriteButton({ id }) {
         setIsFavorite(false)
       }
     })()
-  }, [id])
+  }, [id, reloadCheck])
+
+  const onReloadCheckFavorite = () => {
+    setReloadCheck(!reloadCheck)
+  }
 
   const addFavorite = async () => {
-    await addPokemonFavoriteApi(id)
+    try {
+      await addPokemonFavoriteApi(id)
+      onReloadCheckFavorite()
+    } catch (error) {
+      console.error(console.error)
+    }
   }
 
   const removeFavorite = () => {}
